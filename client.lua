@@ -91,35 +91,45 @@ AddEventHandler('rsg-roulette:client:spinAnimation', function(tableId, result)
         -- Get table coords
         local tableCoords = GetEntityCoords(closestTable)
         
+        -- Simulate wheel spinning with a sequence of notifications
+        local spinDuration = 5000 -- Total spin duration in milliseconds
+        local interval = 500 -- Interval between "spin" updates in milliseconds
+        local steps = math.floor(spinDuration / interval)
+        local sampleNumbers = { "0", "32", "15", "19", "4", "21", "2", "25", "17", "34" } -- Sample roulette numbers for effect
+        local sampleColors = { "green", "red", "black", "red", "black", "red", "black", "red", "black", "red" } -- Corresponding colors
         
+        for i = 1, steps do
+            -- Pick a random number and color for the spinning effect
+            local randomIndex = math.random(1, #sampleNumbers)
+            local displayNumber = sampleNumbers[randomIndex]
+            local displayColor = sampleColors[randomIndex]
+            
+            -- Show spinning notification
+            lib.notify({
+                title = 'ð° Roulette Spinning ð°',
+                description = 'Ball passing: ' .. displayNumber .. ' (' .. string.upper(displayColor) .. ')',
+                type = 'inform',
+                duration = interval,
+                position = 'top-center',
+                icon = 'fa-solid fa-spinner'
+            })
+            
+            -- Wait for the interval
+            Citizen.Wait(interval)
+        end
         
-        -- Show progress bar for spinning - no animations
-        local success = lib.progressBar({
-            duration = 5000,
-            label = '🎰 spinning 🎰',
-            useWhileDead = false,
-            canCancel = false,
-            disable = {
-                move = false,
-                car = false,
-                combat = false,
-                mouse = false
-            }
-        })
-        
-        -- Show result
+        -- Show final result
         lib.notify({
-            title = '🎰 Roulette Result 🎰',
+            title = 'ð° Roulette Result ð°',
             description = 'The ball landed on ' .. result.number .. ' (' .. string.upper(result.color) .. ')',
-            type = 'success'
+            type = 'success',
+            duration = 5000,
+            position = 'top-center'
         })
-        
-        
         
         isRouletteTurning = false
     end
 end)
-
 
 
 RegisterNetEvent('rsg-roulette:client:leaveTable')
@@ -136,7 +146,7 @@ AddEventHandler('rsg-roulette:client:showWinnings', function(winningBets)
     end
     
     lib.notify({
-        title = '🎰 Roulette Winnings 🎰',
+        title = 'ð° Roulette Winnings ð°',
         description = winDescription,
         type = 'success',
         duration = 7000
@@ -151,7 +161,7 @@ function OpenBetMenu()
         options = {
             {
                 title = 'Bet on Color',
-                description = '🎰 Bet on Red or Black 🎰',
+                description = 'ð° Bet on Red or Black ð°',
                 icon = 'palette',
                 onSelect = function()
                     BetOnColor()
@@ -174,7 +184,7 @@ function BetOnColor()
         options = {
             {
                 title = 'Red',
-                description = '🎰Bet on Red numbers',
+                description = 'ð°Bet on Red numbers',
                 icon = 'circle',
                 iconColor = 'red',
                 onSelect = function()
@@ -183,7 +193,7 @@ function BetOnColor()
             },
             {
                 title = 'Black',
-                description = '🎰Bet on Black numbers',
+                description = 'ð°Bet on Black numbers',
                 icon = 'circle',
                 iconColor = 'black',
                 onSelect = function()
